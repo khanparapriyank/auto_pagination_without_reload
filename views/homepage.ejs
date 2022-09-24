@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Horizontal Card Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bcontent {
+            margin-top: 10px;
+        }
+        .center {
+            text-align: center;
+            border: 3px solid green;
+        }
+        .centered-main-div{
+            background: linear-gradient(147deg,#D3D3D3 0%, #7D7D7D 74%);
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Fira Sans', sans-serif;
+        }
+        .centered-div{
+            width: 80%;
+            height: 60px;
+            margin: 10px;
+            padding:5px;
+            background:blue;
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container bcontent">
+        <h2>Pinkvilla News</h2>
+        <hr />
+        <div class="centered-main-div" id="divMain"></div>
+    </div>
+</body>
+
+<script>
+  var isCallOnce = false;
+  var page_number = 1;
+  nextPage(page_number);
+  async function getResponse(pgno) {
+    const urlData = 'http://localhost:1337/pageWiseData/'+ pgno.toString();
+	const response = await fetch(urlData,{method: 'GET'});
+    const posts = await response.json();
+    return posts;
+  }
+  function nextPage(pgno) {
+    getResponse(pgno).then(nodes => {
+        for(var _index=0; _index < nodes.length; _index++) { 
+            var _node=nodes[_index].node;
+            var page_index = pgno + " : "+_index;
+            $("#divMain").append("<div class='card' style='width: 500px; margin: 10px;'\ id='element'> <div class='row no-gutters'><div class='col-sm-5'><img class='card-img' src="+ _node.field_photo_image_section +" alt="+ _node.author_name +"></div><div class='col-sm-7'><div class='card-body'><h5 class='card-title'>"+ page_index +"</h5></h2><p class='card-text'>"+ _node.title +"</p></div></div></div></div>");
+        }
+    });
+    isCallOnce = false;
+  }
+  window.onscroll = function(ev) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        if(!isCallOnce) {
+            page_number = page_number + 1;
+            nextPage(page_number);
+        }
+        isCallOnce = true;
+    } else {
+        isCallOnce = false;
+    }
+  };
+</script>
+</html>
